@@ -72,7 +72,11 @@
 
 		oninit () {
 			this.observe({
-				step: step => this.parent.set({ step }),
+				step: step => {
+					this.parent.set({ step });
+					console.log( 'step', step );
+					this.fire( 'step', step );
+				},
 				active: active => this.parent.set({ active })
 			});
 		},

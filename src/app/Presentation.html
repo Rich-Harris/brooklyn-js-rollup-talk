@@ -148,15 +148,13 @@
 				}
 
 				if ( newSlide ) {
-					newSlide.set(
-						'step', newIndex < oldIndex ?
-							newSlide.get( 'steps' ) :
-							1
-					);
+					const step = newIndex < oldIndex ? newSlide.get( 'steps' ) : 1;
+
+					newSlide.set({ step });
 					newSlide.set( 'active', true );
 
 					this.scrollToSlide();
-					window.location.hash = newIndex + 1;
+					window.location.hash = `${newIndex + 1}-${step}`;
 				}
 			});
 		},
@@ -182,15 +180,28 @@
 			this.container = this.find( '.presentation' );
 			this.slides = this.findAllComponents( 'Slide' );
 
-			let match = /#(\d+)/.exec( window.location.hash );
+			let match = /#(\d+)-(\d+)/.exec( window.location.hash );
 			if ( match ) {
 				// TODO would be better if onrender happened after rendering was complete.
 				// order should stay the same, obvs
 				setTimeout( () => {
+					const step = +match[2];
+
 					this.goto( +match[1] - 1 );
+					const slide = this.slides[ this.get( 'currentSlideIndex' ) ];
+
+					slide.set( 'step', +match[2] );
 					this.inited = true;
 				});
+			} else {
+				this.inited = true;
 			}
+
+			this.slides.forEach( ( slide, index ) => {
+				slide.observe( 'step', step => {
+					window.location.hash = `${index + 1}-${step}`;
+				}, { init: false });
+			});
 
 			this.observe({
 				scrollTop: st => this.container.scrollTop = st

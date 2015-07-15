@@ -3,7 +3,7 @@
 <Slide
 	class='padded'
 	bg='#001f3f'
-	steps='4'
+	steps='6'
 >
 	<div class='background'>
 		{{#if step === 1}}
@@ -14,7 +14,7 @@
 			<pre intro-outro='fade'>{{code.webpack}}</pre>
 		{{/if}}
 
-		{{#if step === 3}}
+		{{#if step >= 3}}
 			<pre intro-outro='fade'>{{code.esperanto}}</pre>
 		{{/if}}
 	</div>
@@ -27,7 +27,7 @@
 			logo='images/logos/browserify.png'
 			label='browserify'
 			active='{{step===1}}'
-			minified='{{step===4}}'
+			minified='{{step >= 4}}'
 		/>
 	{{/if}}
 
@@ -39,7 +39,7 @@
 			logo='images/logos/webpack.png'
 			label='webpack'
 			active='{{step===2}}'
-			minified='{{step===4}}'
+			minified='{{step >= 4}}'
 		/>
 	{{/if}}
 
@@ -50,10 +50,19 @@
 			maxSize='{{maxSize}}'
 			logo='images/logos/esperanto.png'
 			label='esperanto'
-			active='{{step >= 3 && step <= 4}}'
-			minified='{{step===4}}'
+			active='{{step >= 3}}'
+			minified='{{step >= 4}}'
 		/>
 	{{/if}}
+
+
+	<div class='centered'>
+		<p class='impact' style='transform: translate({{impactOffset}}vw, 0);'>
+			<span style='font-size: 12vw;'>ES6 modules are</span>
+			<span style='font-size: 2.6vw;'>not just a standards-flavoured version of what we already have. They are</span>
+			<span style='font-size: 7.9vw;'>fundamentally different</span>
+		</p>
+	</div>
 
 
 </Slide>
@@ -75,9 +84,23 @@
 		color: rgba(255,255,255,0.2);
 		font-size: 2vw;
 	}
+
+	.impact {
+		width: 100vw;
+		color: white;
+		text-shadow: 0 0 5px black;
+		font-family: Impact;
+		text-transform: uppercase;
+		text-align: center;
+	}
+
+	span {
+		display: block;
+	}
 </style>
 
 <script>
+	const eases = require( 'eases' );
 	const generateBundle = require( './generateBundle' );
 
 	const bundles = {
@@ -100,8 +123,19 @@
 				browserify: require( './code-samples/browserify' ),
 				webpack: require( './code-samples/webpack' ),
 				esperanto: require( './code-samples/esperanto' )
-			}
+			},
+			impactOffset: 100
 		}),
+
+		oninit () {
+			this.observe( 'step', step => {
+				this.animate( 'impactOffset', step < 5 ? 150 : step > 5 ? -150 : 0, {
+					duration: 800,
+					delay: 400,
+					easing: eases.elasticOut
+				});
+			});
+		},
 
 		transitions: {
 			fade: require( 'ractive-transitions-fade' )

@@ -9,7 +9,7 @@ module.exports = gobble([
 		.transform( 'rollup-babel', {
 			entry: 'index.js',
 			format: 'cjs',
-			external: [ 'ractive' ]
+			external: [ 'ractive', 'eases' ]
 		})
 		.transform( 'derequire' )
 		.transform( 'browserify', {

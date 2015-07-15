@@ -1,0 +1,153 @@
+<Slide
+	class='padded'
+	bg='#001f3f'
+	steps='6'
+>
+	<div class='max bg'>
+		<!-- map goes here -->
+	</div>
+
+	<div class='max fg'>
+		<svg>
+			{{#each polygons}}
+				<path d='{{path}}' class='{{!!mappings[index] ? "done" : ""}}' on-click='setPoint(point, index)'/>
+			{{/each}}
+		</svg>
+	</div>
+
+	{{#if showInput}}
+		<div class='input-box'>
+			<p>name of station:
+			<input value='{{name}}' decorator='select' on-enter='submit(name)' list='stops'/>
+		</div>
+	{{/if}}
+
+	<datalist id="stops">
+		{{#each stops}}
+			<option value='{{stop_name}}'/>
+		{{/each}}
+	</datalist>
+</Slide>
+
+<style>
+	.max {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	path {
+		stroke: black;
+		fill: white;
+		fill-opacity: 0.1;
+	}
+
+	.done {
+		fill: black;
+		fill-opacity: 0.5;
+	}
+</style>
+
+<script>
+	const d3 = window.d3;
+
+	const stops = require( './stops' );
+	console.log( 'stops', stops );
+
+	let stopByName = {};
+	stops.forEach( stop => stopByName[ stop.stop_name ] = stop );
+
+	window.mappings = JSON.parse( localStorage.getItem( 'mappings' ) || '[]' );
+
+	component.exports = {
+		data: () => ({
+			mappings,
+			stops,
+			name: '',
+			showInput: false
+		}),
+
+		oninit () {
+			const xhr = new XMLHttpRequest();
+
+			xhr.onload = () => {
+				this.svgDoc = xhr.responseXML;
+				this.svg = this.svgDoc.querySelector( 'svg' );
+
+				this.svg.setAttribute( 'viewBox', '0 800 1000 1050' );
+
+				this.start();
+			};
+
+			xhr.open( 'GET', 'subway.svg' );
+			xhr.send();
+		},
+
+		start () {
+			this.find( '.bg' ).appendChild( this.svg );
+			this.find( '.fg svg' ).setAttribute( 'viewBox', this.svg.getAttribute( 'viewBox' ) );
+
+			const circles = [].slice.call( this.svg.querySelectorAll( 'circle' ) );
+			const coords = circles.map( circle => [ +circle.getAttribute( 'cx' ), +circle.getAttribute( 'cy' ) ] );
+
+			const voronoi = d3.geom.voronoi( coords );
+			const polygons = voronoi.map( ( points, i ) => {
+				const point = coords[i];
+
+				return {
+					index: i,
+					point,
+					path: 'M' + points.join( 'L' ) + 'L' + points[0] + 'Z'
+				};
+			});
+
+			this.set({ polygons });
+		},
+
+		setPoint ( point, index ) {
+			if ( this.get( 'showInput' ) ) this.find( 'input' ).select();
+
+			this.set({
+				showInput: true,
+				activeIndex: index
+			});
+		},
+
+		submit ( name ) {
+			const stop = stopByName[ name ];
+			if ( !stop ) alert( 'no stop!' );
+
+			this.set( 'mappings.' + this.get( 'activeIndex' ), stop.stop_id );
+			localStorage.setItem( 'mappings', JSON.stringify( window.mappings ) );
+
+			this.set( 'showInput', false );
+		},
+
+		decorators: {
+			select ( node ) {
+				node.select();
+				return { teardown () {} };
+			}
+		},
+
+		events: {
+			enter ( node, fire ) {
+				node.addEventListener( 'keydown', event => {
+					if ( event.which === 13 ) {
+						fire({
+							node,
+							original: event
+						});
+					}
+				});
+			}
+		}
+	};
+</script>

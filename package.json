@@ -15,6 +15,10 @@
     "start": "gobble"
   },
   "dependencies": {
-    "ractive-transitions-fade": "^0.2.0"
+    "eases": "^1.0.6",
+    "gtfs-realtime-bindings": "0.0.4",
+    "ractive": "^0.7.3",
+    "ractive-transitions-fade": "^0.2.0",
+    "request": "^2.58.0"
   }
 }
