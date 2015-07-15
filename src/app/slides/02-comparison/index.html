@@ -1,0 +1,63 @@
+<link rel='ractive' href='./BundleChart.html'>
+
+<Slide
+	class='padded'
+	bg='#001f3f'
+	steps='3'
+>
+	{{step}}
+
+	<!-- browserify -->
+	{{#if step >= 1}}
+		<BundleChart
+			bundle='{{bundles.browserify}}'
+			maxSize='{{maxSize}}'
+			logo='images/logos/browserify.png'
+			label='browserify'
+			active='{{step===1}}'
+		/>
+	{{/if}}
+
+	<!-- webpack -->
+	{{#if step >= 2}}
+		<BundleChart
+			bundle='{{bundles.webpack}}'
+			maxSize='{{maxSize}}'
+			logo='images/logos/webpack.png'
+			label='webpack'
+			active='{{step===2}}'
+		/>
+	{{/if}}
+
+	<!-- esperanto -->
+	{{#if step >= 3}}
+		<BundleChart
+			bundle='{{bundles.esperanto}}'
+			maxSize='{{maxSize}}'
+			logo='images/logos/esperanto.png'
+			label='esperanto'
+			active='{{step===3}}'
+		/>
+	{{/if}}
+</Slide>
+
+<script>
+	const generateBundle = require( './generateBundle' );
+
+	const bundles = {
+		browserify: generateBundle({ cruft: 3 }),
+		webpack: generateBundle({ cruft: 1 }),
+		esperanto: generateBundle({ cruft: 0 })
+	};
+
+	component.exports = {
+		data: () => ({
+			bundles,
+			maxSize: Math.max(
+				bundles.browserify.size,
+				bundles.webpack.size,
+				bundles.esperanto.size
+			)
+		})
+	}
+</script>

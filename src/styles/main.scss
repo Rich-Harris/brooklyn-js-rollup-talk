@@ -1,0 +1,38 @@
+@import "mixins";
+@import "fonts";
+
+html, body, main {
+	width: 100%;
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: 'Source Sans Pro', 'Helvetica Neue';
+	font-weight: 200;
+	color: #333;
+	tab-size: 2;
+}
+
+body * {
+	position: relative;
+	box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 200;
+	margin: 0 0 0.5em 0;
+}
+
+p {
+	margin: 0 0 1em 0;
+}
+
+a {
+	text-decoration: none;
+	color: rgb(0,100,150);
+}
+
+.clearfix {
+	@include clearfix;
+}

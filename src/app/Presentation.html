@@ -1,0 +1,278 @@
+<div class='presentation' on-scroll='handleScroll()'>
+	{{yield}}
+</div>
+
+
+<style>
+	.presentation {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow-y: scroll;
+	}
+
+	.centered {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+	}
+
+	.centered-x {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%,0);
+	}
+
+	.centered-y {
+		position: absolute;
+		top: 50%;
+		transform: translate(0,-50%);
+	}
+
+	.max {
+		width: 100%;
+		height: 100%;
+	}
+
+	.w95 {
+		width: 95vw;
+	}
+
+	.large {
+		width: 95vw;
+		height: 95vh;
+	}
+
+	.slide .inner > h1 {
+		width: 80%;
+		margin: 0 10%;
+		padding: 0.5em 0 0 0;
+		font-weight: 400;
+		font-size: 4em;
+		border-bottom: 1px solid rgba(0,0,0,0.5);
+	}
+
+	.large-list {
+		font-size: 3em;
+		width: 80vw;
+		margin: 0 10vw;
+	}
+
+	.horizontal-split, .vertical-split {
+		width: 100%;
+		height: 100%;
+	}
+
+	.split-left, .split-right {
+		position: absolute;
+		width: 50%;
+		height: 100%;
+	}
+
+	.split-left {
+		top: 0;
+		left: 0;
+	}
+
+	.split-right {
+		top: 0;
+		right: 0;
+	}
+
+	.split-top, .split-bottom {
+		position: absolute;
+		width: 100%;
+		height: 50%;
+	}
+
+	.split-top {
+		top: 0;
+		left: 0;
+	}
+
+	.split-bottom {
+		bottom: 0;
+		left: 0;
+	}
+
+	h1 {
+		font-size: 2em;
+	}
+
+	.front {
+		z-index: 999;
+	}
+
+	.padded {
+		width: 100%;
+		height: 100%;
+		padding: 1em;
+	}
+
+	table {
+		font-size: 0.6em;
+		border-spacing: 0;
+		width: 100%;
+	}
+
+	th {
+		padding: 0.5em;
+		text-align: left;
+		border-bottom: 3px solid #eee;
+		cursor: pointer;
+	}
+
+	th:hover {
+		background-color: #eee;
+	}
+
+	td {
+		padding: 0.5em;
+		border-bottom: 1px solid #eee;
+		white-space: pre;
+	}
+</style>
+
+
+<script>
+	component.exports = {
+		oninit () {
+			this.observe( 'currentSlideIndex', ( newIndex, oldIndex ) => {
+				if ( !this.slides ) return;
+				const oldSlide = this.slides[ oldIndex ];
+				const newSlide = this.slides[ newIndex ];
+
+				if ( oldSlide ) {
+					oldSlide.set( 'active', false );
+				}
+
+				if ( newSlide ) {
+					newSlide.set(
+						'step', newIndex < oldIndex ?
+							newSlide.get( 'steps' ) :
+							1
+					);
+					newSlide.set( 'active', true );
+
+					this.scrollToSlide();
+					window.location.hash = newIndex + 1;
+				}
+			});
+		},
+
+		scrollToSlide () {
+			const bcr = this.slides[ this.get( 'currentSlideIndex' ) ].bcr();
+
+			const currentScrollTop = this.container.scrollTop;
+			const targetScrollTop = currentScrollTop + bcr.top;
+
+			this.set( 'scrollTop', currentScrollTop );
+			if ( this.inited ) {
+				this.animate( 'scrollTop', targetScrollTop, {
+					easing: 'easeOut',
+					duration: 10 * Math.sqrt( Math.abs( currentScrollTop - targetScrollTop ) )
+				});
+			} else {
+				this.set( 'scrollTop', targetScrollTop );
+			}
+		},
+
+		onrender () {
+			this.container = this.find( '.presentation' );
+			this.slides = this.findAllComponents( 'Slide' );
+
+			let match = /#(\d+)/.exec( window.location.hash );
+			if ( match ) {
+				// TODO would be better if onrender happened after rendering was complete.
+				// order should stay the same, obvs
+				setTimeout( () => {
+					this.goto( +match[1] - 1 );
+					this.inited = true;
+				});
+			}
+
+			this.observe({
+				scrollTop: st => this.container.scrollTop = st
+			});
+
+			window.addEventListener( 'keydown', event => {
+				var i, slide;
+
+				if ( !event.metaKey && /TEXTAREA|INPUT/.test( event.target.tagName ) ) {
+					return;
+				}
+
+				if ( event.which < 37 || event.which > 40 ) {
+					return;
+				}
+
+				event.preventDefault();
+
+				// get current slide
+				i = this.updateCurrentSlide();
+				slide = this.slides[i];
+
+				switch ( event.which ) {
+					case 39:
+						if ( slide.next() ) return;
+
+						if ( i < this.slides.length - 1 ) {
+							this.goto( i + 1 );
+						}
+
+						break;
+
+					case 37:
+						if ( slide.previous() ) return;
+
+						if ( i > 0 ) {
+							this.goto( i - 1 );
+						}
+
+						break;
+
+					case 40:
+						this.goto( i + 1 );
+						break;
+
+					case 38:
+						this.goto( i - 1 );
+						break;
+				}
+			});
+
+			window.addEventListener( 'resize', () => {
+				// stick to current slide
+				this.goto( this.get( 'currentSlideIndex' ) );
+			});
+
+			this.scrollTimeout = null;
+			this._updateCurrentSlide = () => this.updateCurrentSlide();
+		},
+
+		handleScroll () {
+			clearTimeout( this.scrollTimeout );
+			this.scrollTimeout = setTimeout( this._updateCurrentSlide, 200 );
+		},
+
+		updateCurrentSlide () {
+			let previousSlide = this.get( 'currentSlideIndex' );
+
+			var i = this.slides.length;
+			while ( i-- ) {
+				if ( this.slides[i].shouldBeCurrent() ) {
+					this.set( 'currentSlideIndex', i );
+					return i;
+				}
+			}
+
+			throw new Error( 'An impossible situation occurred.' );
+		},
+
+		goto ( i, options = {} ) {
+			i = Math.max( 0, Math.min( i, this.slides.length - 1 ) );
+			this.set( 'currentSlideIndex', i );
+		}
+	};
+</script>

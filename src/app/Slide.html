@@ -1,0 +1,121 @@
+<section
+	class='slide {{class}} {{#if hasheader}}has-header{{/if}}'
+	style='color: {{fg}};
+	       background-image: {{#if img}}url({{img}}){{else}}none{{/if}};'
+>
+	<div class='inner' style='background-color: {{bg}}'>
+		{{yield}}
+	</div>
+
+	{{#if steps > 1}}
+		<span class='step-indicator'>{{step}}/{{steps}}</span>
+	{{/if}}
+</section>
+
+<style>
+	.slide {
+		position: relative;
+		width: 100%;
+		height: 100vh;
+		padding: 0;
+		box-sizing: border-box;
+		background: no-repeat 50% 50%;
+		background-size: cover;
+		overflow: hidden;
+	}
+
+	.inner {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+
+		-webkit-transition: all 0.4s;
+		-moz-transition: all 0.4s;
+		-ms-transition: all 0.4s;
+		-o-transition: all 0.4s;
+		transition: all 0.4s;
+	}
+
+	.padded .inner {
+		padding: 2em;
+	}
+
+	.has-header .inner {
+		padding: 8em 0 0 0;
+	}
+
+	.has-header .inner > h1 {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	.step-indicator {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		z-index: 999;
+		background: white;
+		padding: 0.2em;
+		opacity: 0.5;
+	}
+</style>
+
+<script>
+	component.exports = {
+		data: () => ({
+			step: 1,
+			steps: 1
+		}),
+
+		oninit () {
+			this.observe({
+				step: step => this.parent.set({ step }),
+				active: active => this.parent.set({ active })
+			});
+		},
+
+		onrender () {
+			this.container = this.find( '.slide' );
+		},
+
+		shouldBeCurrent () {
+			var bcr, midY;
+
+			bcr = this.bcr();
+			midY = ( bcr.top + bcr.bottom ) / 2;
+
+			if ( midY > 0 && midY < window.innerHeight ) {
+				return true;
+			}
+		},
+
+		bcr () {
+			return this.container.getBoundingClientRect();
+		},
+
+		next () {
+			if ( this.get( 'step' ) < this.get( 'steps' ) ) {
+				this.add( 'step' );
+				return true;
+			}
+		},
+
+		previous () {
+			if ( this.get( 'step' ) > 1 ) {
+				this.subtract( 'step' );
+				return true;
+			}
+		},
+
+		gotoFirstStep () {
+			this.set( 'step', 1 );
+		},
+
+		gotoLastStep () {
+			this.set( 'step', this.get( 'steps' ) );
+		}
+	};
+</script>

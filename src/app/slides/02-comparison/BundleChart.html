@@ -1,0 +1,96 @@
+<div class='bundle-chart {{active ? "thick" : "thin"}}' intro-outro='fade'>
+	<div class='logo' style='background-image: url({{logo}});'></div>
+	<div class='bundle-chart-inner' style='width: {{100 * bundle.size / maxSize}}%'>
+		<div class='bundle-app' style='width: {{100 * bundle.app.size / bundle.size}}%;'>
+			{{#each bundle.app.modules}}
+				{{>module { module: this, total: bundle.app.size } }}
+			{{/each}}
+		</div>
+
+		<div class='bundle-lib' style='width: {{100 * bundle.lib.size / bundle.size}}%;'>
+			{{#each bundle.lib.modules}}
+				{{>module { module: this, total: bundle.lib.size } }}
+			{{/each}}
+		</div>
+	</div>
+</div>
+
+{{#partial module}}
+	<div class='module' style='width: {{100 * module.total / total}}%'>
+		<div class='cruft' style='width: {{100 * module.cruft / module.total}}%'></div>
+		<div class='used' style='width: {{100 * module.used / module.total}}%'></div>
+		<div class='unused' style='width: {{100 * module.unused / module.total}}%'></div>
+	</div>
+{{/partial}}
+
+
+<style>
+	.bundle-chart {
+		width: 100%;
+		height: 10vh;
+		padding: 0 0 0 10em;
+		margin: 0 0 1em 0;
+		transition: height 0.4s ease-out;
+	}
+
+	.bundle-chart.thin {
+		height: 4vh;
+	}
+
+	.logo {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 10em;
+		height: 100%;
+		background: 100% 50% no-repeat;
+		background-size: contain;
+	}
+
+	.bundle-chart-inner {
+		background-color: white;
+		width: 100%;
+		height: 100%;
+	}
+
+	.bundle-app, .bundle-lib, .module, .cruft, .used, .unused {
+		float: left;
+		height: 100%;
+	}
+
+	.bundle-app {
+		background-color: green;
+		border: 2px solid rgba(255,255,255,0.4);
+	}
+
+	.bundle-lib {
+		background-color: green;
+		border: 2px solid rgba(255,255,255,0.4);
+	}
+
+	.module {
+		border: 1px solid black;
+	}
+
+	.cruft {
+		background-color: red;
+		height: 100%;
+	}
+
+	.used {
+		background-color: green;
+	}
+
+	.unused {
+		background-color: purple;
+	}
+</style>
+
+
+<script>
+	component.exports = {
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>
