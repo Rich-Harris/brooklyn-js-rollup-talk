@@ -1,15 +1,17 @@
+<link rel='ractive' href='./Module.html'>
+
 <div class='bundle-chart {{active ? "thick" : "thin"}}' intro-outro='fade'>
 	<div class='logo' style='background-image: url({{logo}});'></div>
-	<div class='bundle-chart-inner' style='width: {{100 * bundle.size / maxSize}}%'>
-		<div class='bundle-app' style='width: {{100 * bundle.app.size / bundle.size}}%;'>
+	<div class='bundle-chart-inner' style='width: {{totalWidth}}%'>
+		<div class='bundle-app' style='width: {{appWidth}}%;'>
 			{{#each bundle.app.modules}}
-				{{>module { module: this, total: bundle.app.size } }}
+				<Module module='{{this}}' total='{{ minified ? bundle.app.sizeMinified : bundle.app.size}}' minified='{{minified}}'/>
 			{{/each}}
 		</div>
 
-		<div class='bundle-lib' style='width: {{100 * bundle.lib.size / bundle.size}}%;'>
+		<div class='bundle-lib' style='width: {{libWidth}}%;'>
 			{{#each bundle.lib.modules}}
-				{{>module { module: this, total: bundle.lib.size } }}
+				<Module module='{{this}}' total='{{ minified ? bundle.lib.sizeMinified : bundle.lib.size}}' minified='{{minified}}'/>
 			{{/each}}
 		</div>
 	</div>
@@ -51,11 +53,13 @@
 		background-color: white;
 		width: 100%;
 		height: 100%;
+		transition: width 0.4s ease-out;
 	}
 
-	.bundle-app, .bundle-lib, .module, .cruft, .used, .unused {
+	.bundle-app, .bundle-lib {
 		float: left;
 		height: 100%;
+		transition: width 0.4s ease-out;
 	}
 
 	.bundle-app {
@@ -67,28 +71,34 @@
 		background-color: green;
 		border: 2px solid rgba(255,255,255,0.4);
 	}
-
-	.module {
-		border: 1px solid black;
-	}
-
-	.cruft {
-		background-color: red;
-		height: 100%;
-	}
-
-	.used {
-		background-color: green;
-	}
-
-	.unused {
-		background-color: purple;
-	}
 </style>
 
 
 <script>
 	component.exports = {
+		computed: {
+			totalWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'bundle.sizeMinified' : 'bundle.size' ) /
+					   this.get( 'maxSize' );
+			},
+
+			appWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'bundle.app.sizeMinified' : 'bundle.app.size' ) /
+					   this.get( minified ? 'bundle.sizeMinified' : 'bundle.size' );
+			},
+
+			libWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'bundle.lib.sizeMinified' : 'bundle.lib.size' ) /
+					   this.get( minified ? 'bundle.sizeMinified' : 'bundle.size' );
+			}
+		},
+
 		transitions: {
 			fade: require( 'ractive-transitions-fade' )
 		}

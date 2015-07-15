@@ -1,0 +1,57 @@
+<div class='module' style='width: {{totalWidth}}%'>
+	<div class='cruft' style='width: {{100 * module.cruft / module.total}}%'></div>
+	<div class='used' style='width: {{usedWidth}}%'></div>
+	<div class='unused' style='width: {{unusedWidth}}%'></div>
+</div>
+
+<style>
+	.module, .cruft, .used, .unused {
+		float: left;
+		height: 100%;
+		transition: width 0.4s ease-out;
+	}
+
+	.module {
+		border: 1px solid black;
+	}
+
+	.cruft {
+		background-color: red;
+		height: 100%;
+	}
+
+	.used {
+		background-color: green;
+	}
+
+	.unused {
+		background-color: purple;
+	}
+</style>
+
+<script>
+	component.exports = {
+		computed: {
+			totalWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'module.minifiedTotal' : 'module.total' ) /
+					   this.get( 'total' );
+			},
+
+			usedWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'module.minifiedUsed' : 'module.used' ) /
+					   this.get( minified ? 'module.minifiedTotal' : 'module.total' );
+			},
+
+			unusedWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( minified ? 'module.minifiedUnused' : 'module.unused' ) /
+					   this.get( minified ? 'module.minifiedTotal' : 'module.total' );
+			}
+		}
+	}
+</script>
