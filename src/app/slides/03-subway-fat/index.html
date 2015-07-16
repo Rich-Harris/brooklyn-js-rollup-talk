@@ -64,7 +64,20 @@
 	let stopByName = {};
 	stops.forEach( stop => stopByName[ stop.stop_name ] = stop );
 
+	let stopById = {};
+	stops.forEach( stop => stopById[ stop.stop_id ] = stop );
+
 	window.mappings = JSON.parse( localStorage.getItem( 'mappings' ) || '[]' );
+
+	let includedStops = [];
+	window.mappings.forEach( id => includedStops.push( id ) );
+	console.log( 'includedStops', includedStops )
+
+	stops.forEach( stop => {
+		if ( !~includedStops.indexOf( stop.stop_id ) ) {
+			console.log( 'missing', stop )
+		}
+	});
 
 	component.exports = {
 		data: () => ({
@@ -81,7 +94,7 @@
 				this.svgDoc = xhr.responseXML;
 				this.svg = this.svgDoc.querySelector( 'svg' );
 
-				this.svg.setAttribute( 'viewBox', '0 800 1000 1050' );
+				this.svg.setAttribute( 'viewBox', '0 1200 1000 1050' );
 
 				this.start();
 			};
@@ -96,6 +109,17 @@
 
 			const circles = [].slice.call( this.svg.querySelectorAll( 'circle' ) );
 			const coords = circles.map( circle => [ +circle.getAttribute( 'cx' ), +circle.getAttribute( 'cy' ) ] );
+
+			const stops = mappings.map( ( id, i ) => {
+				return id ? {
+					x: coords[i][0],
+					y: coords[i][1],
+					id,
+					name: stopById[ id ].stop_name
+				} : null;
+			}).filter( Boolean );
+
+			window.stops = stops;
 
 			const voronoi = d3.geom.voronoi( coords );
 			const polygons = voronoi.map( ( points, i ) => {

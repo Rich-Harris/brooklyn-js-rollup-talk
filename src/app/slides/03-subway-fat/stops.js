@@ -1488,6 +1488,10 @@ const stops = rows.map( row => {
 	return record;
 })
 .filter( stop => !stop.parent_station )
-.filter( stop => stop.stop_id[0] === '6' );
+.filter( stop => {
+	const line = +stop.stop_id[0];
+	//return line === 6;
+	return line >= 1 && line <= 6;
+});
 
 export default stops;
