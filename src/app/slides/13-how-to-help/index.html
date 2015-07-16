@@ -1,18 +1,44 @@
 <Slide
 	class='padded'
 	bg='#001f3f'
-	steps='2'
+	steps='4'
 >
-	<h2>How you can help</h2>
-
-	<pre>
+	{{#if step >= 1 && step <= 2}}
+		<pre intro-outro='fade'>
 {
   "name": "my-neato-library",&nbsp;&nbsp;&nbsp;
   "version": "0.1.0",
   "main": "lib/neato.js"{{#if step === 2}}<span intro-outro='fade'>,
   <strong>"jsnext:main": "src/neato.js"</strong></span>{{/if}}
 }
-	</pre>
+		</pre>
+	{{/if}}
+
+	{{#if step === 3}}
+		<pre intro-outro='fade' style='font-size: 4vw;'>
+function Image (src) {
+  this.src = src;
+  <span class='comment'>// ...</span>
+}
+
+<span class='comment'>// impossible to remove</span>
+Image.prototype.desaturate = ...
+Image.prototype.sharpen = ...
+		</pre>
+	{{/if}}
+
+	{{#if step === 4}}
+		<pre intro-outro='fade' style='font-size: 4vw;'>
+export function Image (src) {
+  this.src = src;
+  <span class='comment'>// ...</span>
+}
+
+<span class='comment'>// easy to remove</span>
+export function desaturate ...&nbsp;&nbsp;
+export function sharpen ...
+		</pre>
+	{{/if}}
 </Slide>
 
 <style>
@@ -29,6 +55,10 @@
 		font-size: 4vw;
 		left: 50%;
 		transform: translate(-50%,0);
+	}
+
+	.comment {
+		opacity: 0.5;
 	}
 </style>
 
