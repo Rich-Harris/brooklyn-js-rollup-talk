@@ -1,6 +1,6 @@
 <Slide
 	class='padded'
-	bg='#001f3f'
+	bg='white'
 	steps='6'
 >
 	<div class='max bg'>
@@ -8,25 +8,56 @@
 	</div>
 
 	<div class='max fg'>
-		<svg>
-			{{#each polygons}}
-				<path d='{{path}}' class='{{!!mappings[index] ? "done" : ""}}' on-click='setPoint(point, index)'/>
-			{{/each}}
+		<svg viewBox='0 0 2500 2700'>
+			<image xlink:href='subway.png' x='0' y='0' width='2500' height='2700'/>
+
+			{{#if step >= 2 && step <= 3}}
+				<g class='circles' intro-outro='fade'>
+					{{#each stops}}
+						<circle
+							cx='{{x}}'
+							cy='{{y}}'
+							r='30'
+							class='event-target {{step === 2 ? "visible" : "hidden"}}'
+							on-mouseover='set("highlighted", this)'
+							on-mouseout='set("highlighted", null)'
+						/>
+					{{/each}}
+				</g>
+			{{/if}}
+
+			{{#if step >= 4}}
+				<g class='voronoi' intro-outro='fade'>
+					{{#each overlay}}
+						<path
+							d='{{path}}'
+							class='overlay {{step >= 5 ? "hidden" : "visible"}}'
+							style='fill: {{fill}};'
+							on-mouseover='set("highlighted", stop)'
+							on-mouseout='set("highlighted", null)'
+						/>
+					{{/each}}
+				</g>
+			{{/if}}
 		</svg>
 	</div>
 
-	{{#if showInput}}
-		<div class='input-box'>
-			<p>name of station:
-			<input value='{{name}}' decorator='select' on-enter='submit(name)' list='stops'/>
+	<div class='filter'>
+		<select value='{{line}}'>
+			<option value='all'>all lines</option>
+			<option>123</option>
+			<option>456</option>
+		</select>
+	</div>
+
+	{{#if tooltip}}
+		<div class='tooltip-anchor' style='left: {{tooltip.x}}; top: {{tooltip.y}};'>
+			<div class='tooltip'>
+				<h1>{{tooltip.stop.name}}</h1>
+			</div>
+			<div class='tooltip-arrow'></div>
 		</div>
 	{{/if}}
-
-	<datalist id="stops">
-		{{#each stops}}
-			<option value='{{stop_name}}'/>
-		{{/each}}
-	</datalist>
 </Slide>
 
 <style>
@@ -43,135 +74,128 @@
 		height: 100%;
 	}
 
+	.event-target {
+		fill: #FF4136;
+		stroke: white;
+		stroke-width: 5;
+	}
+
+	.visible { opacity: 0.7; }
+	.hidden { opacity: 0; }
+
 	path {
 		stroke: black;
 		fill: white;
-		fill-opacity: 0.1;
+		fill-opacity: 0.9;
+		transition: fill-opacity 0.4s;
 	}
 
-	.done {
-		fill: black;
-		fill-opacity: 0.5;
+	.tooltip-anchor {
+		position: fixed;
+		width: 0;
+		height: 0;
+	}
+
+	.tooltip {
+		position: absolute;
+		width: 20em;
+		left: -10em;
+		bottom: 1em;
+		padding: 0.5em;
+		background-color: #333;
+		color: white;
+		border-radius: 0.2em;
+		pointer-events: none;
+	}
+
+	.tooltip-arrow {
+		position: absolute;
+		left: -1em;
+		top: -1em;
+		width: 1em;
+		height: 1em;
+		border-top: 1em solid #333;
+		border-left: 1em solid transparent;
+		border-right: 1em solid transparent;
+		border-bottom: 1em solid transparent;
+		pointer-events: none;
+	}
+
+	.tooltip h1 {
+		font-size: 1.4rem;
+		font-weight: 900;
 	}
 </style>
 
 <script>
 	const d3 = window.d3;
 
-	const stops = require( './stops' );
-	console.log( 'stops', stops );
+	const stopData = require( './used_stops' );
 
-	let stopByName = {};
-	stops.forEach( stop => stopByName[ stop.stop_name ] = stop );
+	const colors = [ "#0074D9", "#7FDBFF", "#39CCCC", "#3D9970", "#2ECC40", "#01FF70", "#FFDC00", "#FF851B", "#FF4136", "#85144b", "#F012BE", "#B10DC9" ];
+	let c = 0;
 
-	let stopById = {};
-	stops.forEach( stop => stopById[ stop.stop_id ] = stop );
-
-	window.mappings = JSON.parse( localStorage.getItem( 'mappings' ) || '[]' );
-
-	let includedStops = [];
-	window.mappings.forEach( id => includedStops.push( id ) );
-	console.log( 'includedStops', includedStops )
-
-	stops.forEach( stop => {
-		if ( !~includedStops.indexOf( stop.stop_id ) ) {
-			console.log( 'missing', stop )
-		}
-	});
+	function svgToClient ( matrix, x, y ) {
+		return {
+			x: matrix.e + ( matrix.a * x ),
+			y: matrix.f + ( matrix.a * y )
+		};
+	}
 
 	component.exports = {
 		data: () => ({
-			mappings,
-			stops,
-			name: '',
-			showInput: false
+
 		}),
 
-		oninit () {
-			const xhr = new XMLHttpRequest();
-
-			xhr.onload = () => {
-				this.svgDoc = xhr.responseXML;
-				this.svg = this.svgDoc.querySelector( 'svg' );
-
-				this.svg.setAttribute( 'viewBox', '0 1200 1000 1050' );
-
-				this.start();
-			};
-
-			xhr.open( 'GET', 'subway.svg' );
-			xhr.send();
-		},
-
-		start () {
-			this.find( '.bg' ).appendChild( this.svg );
-			this.find( '.fg svg' ).setAttribute( 'viewBox', this.svg.getAttribute( 'viewBox' ) );
-
-			const circles = [].slice.call( this.svg.querySelectorAll( 'circle' ) );
-			const coords = circles.map( circle => [ +circle.getAttribute( 'cx' ), +circle.getAttribute( 'cy' ) ] );
-
-			const stops = mappings.map( ( id, i ) => {
-				return id ? {
-					x: coords[i][0],
-					y: coords[i][1],
-					id,
-					name: stopById[ id ].stop_name
-				} : null;
-			}).filter( Boolean );
-
-			window.stops = stops;
-
-			const voronoi = d3.geom.voronoi( coords );
-			const polygons = voronoi.map( ( points, i ) => {
-				const point = coords[i];
-
-				return {
-					index: i,
-					point,
-					path: 'M' + points.join( 'L' ) + 'L' + points[0] + 'Z'
-				};
-			});
-
-			this.set({ polygons });
-		},
-
-		setPoint ( point, index ) {
-			if ( this.get( 'showInput' ) ) this.find( 'input' ).select();
-
-			this.set({
-				showInput: true,
-				activeIndex: index
-			});
-		},
-
-		submit ( name ) {
-			const stop = stopByName[ name ];
-			if ( !stop ) alert( 'no stop!' );
-
-			this.set( 'mappings.' + this.get( 'activeIndex' ), stop.stop_id );
-			localStorage.setItem( 'mappings', JSON.stringify( window.mappings ) );
-
-			this.set( 'showInput', false );
-		},
-
-		decorators: {
-			select ( node ) {
-				node.select();
-				return { teardown () {} };
-			}
-		},
-
-		events: {
-			enter ( node, fire ) {
-				node.addEventListener( 'keydown', event => {
-					if ( event.which === 13 ) {
-						fire({
-							node,
-							original: event
-						});
-					}
+		computed: {
+			stops () {
+				const line = this.get( 'line' );
+				return stopData.filter( stop => {
+					if ( line === 'all' ) return true;
+					if ( line == '123' ) return +stop.id[0] <= 3;
+					if ( line == '456' ) return +stop.id[0] >= 4;
 				});
+			},
+
+			overlay () {
+				const stops = this.get( 'stops' );
+
+				const voronoi = d3.geom.voronoi( stops.map( ({ x, y }) => ([ x, y ]) ) );
+				const overlay = voronoi.map( ( points, i ) => {
+					const stop = stops[i];
+
+					return {
+						index: i,
+						stop,
+						path: 'M' + points.join( 'L' ) + 'L' + points[0] + 'Z',
+						fill: colors[ c++ % colors.length ]
+					};
+				});
+
+				return overlay;
 			}
+		},
+
+		oninit () {
+
+		},
+
+		onrender () {
+			this.svg = this.find( 'svg' );
+
+			this.observe( 'highlighted', stop => {
+				if ( stop ) {
+					const { x, y } = svgToClient( this.svg.getScreenCTM(), stop.x, stop.y );
+
+					this.set( 'tooltip', { stop, x, y });
+				} else {
+					this.set( 'tooltip', null );
+				}
+			});
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
 		}
 	};
 </script>
