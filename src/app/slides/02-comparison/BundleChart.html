@@ -1,18 +1,29 @@
 <link rel='ractive' href='./Module.html'>
 
 <div class='bundle-chart {{active ? "thick" : "thin"}}' intro-outro='fade'>
-	<div class='logo' style='background-image: url({{logo}});'></div>
+	<div class='logo' style='background-image: url({{logo}});'>
+		<span class='label'>{{label}}</span>
+	</div>
+
 	<div class='bundle-chart-inner' style='width: {{totalWidth}}%'>
 		<div class='bundle-app' style='width: {{appWidth}}%;'>
 			{{#each bundle.app.modules}}
 				<Module module='{{this}}' total='{{ minified ? bundle.app.sizeMinified : bundle.app.size}}' minified='{{minified}}'/>
 			{{/each}}
+
+			{{#if active}}
+				<div intro-outro='fade' class='bundle-annotation'><span>app code</span></div>
+			{{/if}}
 		</div>
 
 		<div class='bundle-lib' style='width: {{libWidth}}%;'>
 			{{#each bundle.lib.modules}}
 				<Module module='{{this}}' total='{{ minified ? bundle.lib.sizeMinified : bundle.lib.size}}' minified='{{minified}}'/>
 			{{/each}}
+
+			{{#if active}}
+				<div intro-outro='fade' class='bundle-annotation'><span>library code</span></div>
+			{{/if}}
 		</div>
 	</div>
 </div>
@@ -30,7 +41,7 @@
 	.bundle-chart {
 		width: 100%;
 		height: 10vh;
-		padding: 0 0 0 10em;
+		padding: 0 0 0 22em;
 		margin: 0 0 1em 0;
 		transition: height 0.4s ease-out;
 	}
@@ -39,14 +50,43 @@
 		height: 4vh;
 	}
 
+	.bundle-annotation {
+		position: absolute;
+		width: 100%;
+		height: 1em;
+		bottom: -2em;
+		border: 2px solid white;
+		border-top: 2px solid transparent;
+	}
+
+	.bundle-annotation span {
+		position: absolute;
+		width: 100%;
+		bottom: -2em;
+		color: white;
+		text-align: center;
+		display: block;
+		font-size: 1.4em;
+	}
+
 	.logo {
 		position: absolute;
 		left: 0;
 		top: 0;
-		width: 10em;
+		width: 21em;
 		height: 100%;
 		background: 100% 50% no-repeat;
 		background-size: contain;
+		color: white;
+		line-height: 100%;
+	}
+
+	.label {
+		position: absolute;
+		top: 50%;
+		font-size: 2rem;
+		right: 9rem;
+		transform: translate(0,-50%);
 	}
 
 	.bundle-chart-inner {

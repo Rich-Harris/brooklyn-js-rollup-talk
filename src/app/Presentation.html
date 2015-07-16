@@ -166,14 +166,14 @@
 			});
 		},
 
-		scrollToSlide () {
+		scrollToSlide ( snap ) {
 			const bcr = this.slides[ this.get( 'currentSlideIndex' ) ].bcr();
 
 			const currentScrollTop = this.container.scrollTop;
 			const targetScrollTop = currentScrollTop + bcr.top;
 
 			this.set( 'scrollTop', currentScrollTop );
-			if ( this.inited ) {
+			if ( this.inited && !snap ) {
 				this.animate( 'scrollTop', targetScrollTop, {
 					easing: 'easeOut',
 					duration: 10 * Math.sqrt( Math.abs( currentScrollTop - targetScrollTop ) )
@@ -262,7 +262,7 @@
 
 			window.addEventListener( 'resize', () => {
 				// stick to current slide
-				this.goto( this.get( 'currentSlideIndex' ) );
+				this.scrollToSlide( true );
 			});
 
 			this.scrollTimeout = null;
@@ -280,7 +280,12 @@
 			var i = this.slides.length;
 			while ( i-- ) {
 				if ( this.slides[i].shouldBeCurrent() ) {
-					this.set( 'currentSlideIndex', i );
+					if ( i === this.get( 'currentSlideIndex' ) ) {
+						this.scrollToSlide();
+					} else {
+						this.set( 'currentSlideIndex', i );
+					}
+
 					return i;
 				}
 			}

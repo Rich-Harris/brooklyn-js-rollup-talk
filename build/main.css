@@ -1,0 +1,76 @@
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url("fonts/SourceSansPro/sourcesanspro-regular-webfont.eot");
+  src: url("fonts/SourceSansPro/sourcesanspro-regular-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/SourceSansPro/sourcesanspro-regular-webfont.woff") format("woff"), url("fonts/SourceSansPro/sourcesanspro-regular-webfont.ttf") format("truetype"), url("fonts/SourceSansPro/sourcesanspro-regular-webfont.svg#source_sans_proregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url("fonts/SourceSansPro/sourcesanspro-semibold-webfont.eot");
+  src: url("fonts/SourceSansPro/sourcesanspro-semibold-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/SourceSansPro/sourcesanspro-semibold-webfont.woff") format("woff"), url("fonts/SourceSansPro/sourcesanspro-semibold-webfont.ttf") format("truetype"), url("fonts/SourceSansPro/sourcesanspro-semibold-webfont.svg#source_sans_prosemibold") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url("fonts/SourceSansPro/sourcesanspro-light-webfont.eot");
+  src: url("fonts/SourceSansPro/sourcesanspro-light-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/SourceSansPro/sourcesanspro-light-webfont.woff") format("woff"), url("fonts/SourceSansPro/sourcesanspro-light-webfont.ttf") format("truetype"), url("fonts/SourceSansPro/sourcesanspro-light-webfont.svg#source_sans_prolight") format("svg");
+  font-weight: 200;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Inconsolata';
+  src: url("fonts/Inconsolata/inconsolata-regular-webfont.eot");
+  src: url("fonts/Inconsolata/inconsolata-regular-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/Inconsolata/inconsolata-regular-webfont.woff") format("woff"), url("fonts/Inconsolata/inconsolata-regular-webfont.ttf") format("truetype"), url("fonts/Inconsolata/inconsolata-regular-webfont.svg#inconsolataregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Inconsolata';
+  src: url("fonts/Inconsolata/inconsolata-bold-webfont.eot");
+  src: url("fonts/Inconsolata/inconsolata-bold-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/Inconsolata/inconsolata-bold-webfont.woff") format("woff"), url("fonts/Inconsolata/inconsolata-bold-webfont.ttf") format("truetype"), url("fonts/Inconsolata/inconsolata-bold-webfont.svg#inconsolatabold") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+html, body, main {
+  width: 100%;
+  min-height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Source Sans Pro', 'Helvetica Neue';
+  font-weight: 200;
+  color: #333;
+  tab-size: 2; }
+
+body * {
+  position: relative;
+  box-sizing: border-box; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 200;
+  margin: 0 0 0.5em 0; }
+
+p {
+  margin: 0 0 1em 0; }
+
+a {
+  text-decoration: none;
+  color: #006496; }
+
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both; }
+
+.impact {
+  width: 100vw;
+  color: white;
+  text-shadow: 0 0 5px black;
+  font-family: Impact;
+  text-transform: uppercase;
+  text-align: center; }
+  .impact span {
+    display: block; }
+/*# sourceMappingURL=main.css.map */

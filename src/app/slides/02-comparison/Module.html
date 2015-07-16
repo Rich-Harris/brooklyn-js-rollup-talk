@@ -1,5 +1,5 @@
 <div class='module' style='width: {{totalWidth}}%'>
-	<div class='cruft' style='width: {{100 * module.cruft / module.total}}%'></div>
+	<div class='cruft' style='width: {{cruftWidth}}%'></div>
 	<div class='used' style='width: {{usedWidth}}%'></div>
 	<div class='unused' style='width: {{unusedWidth}}%'></div>
 </div>
@@ -37,6 +37,13 @@
 				return 100 *
 				       this.get( minified ? 'module.minifiedTotal' : 'module.total' ) /
 					   this.get( 'total' );
+			},
+
+			cruftWidth () {
+				const minified = this.get( 'minified' );
+				return 100 *
+				       this.get( 'module.cruft' ) /
+					   this.get( minified ? 'module.minifiedTotal' : 'module.total' );
 			},
 
 			usedWidth () {

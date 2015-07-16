@@ -4,7 +4,7 @@ var request = require( 'request' );
 var fs = require( 'fs' );
 var path = require( 'path' );
 
-var dest = path.join( __dirname, '../src/files/images/texture.jpg' );
+var dest = path.join( __dirname, '../build/images/texture.jpg' );
 var backup = path.join( __dirname, 'backup.jpg' );
 
 function poll () {

@@ -21558,7 +21558,6 @@ var renderScene = (function () { 'use strict';
 
   		particles[0].rotation.x += 0.002;
   		particles[0].rotation.y += 0.001;
-  		console.log( 'particles[0].position.z', particles[0].position.z );
 
   		particles[1].rotation.x += 0.003;
   		particles[1].rotation.y += 0.001;
