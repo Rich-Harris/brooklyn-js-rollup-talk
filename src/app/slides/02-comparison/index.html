@@ -149,7 +149,9 @@
 		esperanto: generateBundle({ cruft: 0, minifyFactor: 4 })
 	};
 
-	console.log( 'bundles', bundles )
+	function elasticOut(t) {
+	  return Math.sin(-13.0 * (t + 1.0) * Math.PI/2) * Math.pow(2.0, -10.0 * t) + 1.0
+	}
 
 	component.exports = {
 		data: () => ({
@@ -172,7 +174,7 @@
 				this.animate( 'impactOffset', step < 5 ? 150 : step > 5 ? -150 : 0, {
 					duration: 800,
 					delay: 400,
-					easing: eases.elasticOut
+					easing: elasticOut
 				});
 			});
 		},

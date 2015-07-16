@@ -1,0 +1,52 @@
+<div class='tree-view'>
+	<NodeList
+		parentId='root'
+		prop='body'
+		nodes='{{tree.body}}'
+		depth='0'
+		highlightedId='{{highlightedId}}'
+		highlightedProp='{{highlightedProp}}'
+	/>
+</div>
+
+<style>
+	.tree-view {
+		font-size: 1em;
+		font-family: Inconsolata;
+	}
+
+	.node {
+		display: inline;
+	}
+
+	.node-block {
+		display: block;
+	}
+
+	ul {
+		padding: 0.2em 0 0.2em 1em;
+		margin: 0;
+		list-style: none;
+	}
+
+	li {
+		display: block;
+		border: 1px solid transparent;
+		border-radius: 0.2em;
+		padding: 0.2em;
+		margin: -0.2em;
+	}
+
+	.highlighted {
+		border: 1px solid rgba(0,0,0,0.1);
+		background-color: rgba(0,0,0,0.05);
+		font-weight: normal;
+	}
+
+	button {
+		display: inline;
+		height: 0.5em;
+		line-height: 0;
+		padding: 0 0.5em;
+	}
+</style>

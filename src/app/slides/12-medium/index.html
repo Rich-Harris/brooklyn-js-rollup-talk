@@ -21,19 +21,23 @@
 <script>
 	const eases = require( 'eases' );
 
+	function elasticOut(t) {
+	  return Math.sin(-13.0 * (t + 1.0) * Math.PI/2) * Math.pow(2.0, -10.0 * t) + 1.0
+	}
+
 	component.exports = {
 		oninit () {
 			this.observe( 'step', step => {
 				this.animate( 'impactOffset', ( step < 2 ? 150 : step > 2 ? -150 : 0 ), {
 					duration: 800,
 					delay: 400,
-					easing: eases.elasticOut
+					easing: elasticOut
 				});
 
 				this.animate( 'imageOffset', ( step < 3 ? 150 : step > 3 ? -150 : 0 ), {
 					duration: 800,
 					delay: 400,
-					easing: eases.elasticOut
+					easing: elasticOut
 				});
 			});
 		}

@@ -1,0 +1,42 @@
+<div class='node-member'>
+	{{#if (Array.isArray(member))}}
+		<NodeList
+			parentId='{{parentId}}'
+			prop='{{prop}}'
+			nodes='{{member}}'
+			depth='{{depth + 1}}'
+			trailingComma='{{trailingComma}}'
+			highlightedId='{{highlightedId}}'
+			highlightedProp='{{highlightedProp}}'
+		/>
+	{{elseif (this && typeof member === 'object')}}
+		<Node
+			node='{{member}}'
+			trailingComma='{{trailingComma}}'
+			depth='{{depth + 1}}'
+			block='false'
+			highlightedId='{{highlightedId}}'
+			highlightedProp='{{highlightedProp}}'
+		/>
+	{{else}}
+		<span class='value {{typeof member}}'>{{JSON.stringify(member)}}{{#if trailingComma}},{{/if}}</span>
+	{{/if}}
+</div>
+
+<style>
+	.node-member {
+		display: inline;
+	}
+
+	.boolean {
+		color: #845dc4;
+	}
+
+	.number {
+		color: rgb(150,0,0);
+	}
+
+	.string {
+		color: #729d34;
+	}
+</style>

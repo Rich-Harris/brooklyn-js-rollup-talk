@@ -1,0 +1,98 @@
+<div class='node {{#if block}}block{{/if}}'>
+	{ <button on-click='toggle("expanded")'>{{expanded ? '-' : '+'}}</button>
+		{{#if expanded}}
+			<ul>
+				{{#each keys :i }}
+					<li
+						class='{{isHighlighted( node._id, this ) ? "highlighted": ""}}'
+						on-mouseover='highlight(node._id, this)'
+					>
+						{{this}}:
+						<Member
+							parentId='{{node._id}}'
+							prop='{{this}}'
+							member='{{node[this]}}'
+							trailingComma='{{i < keys.length - 1}}'
+							depth='{{depth}}'
+							highlightedId='{{highlightedId}}'
+							highlightedProp='{{highlightedProp}}'
+						/>
+					</li>
+				{{/each}}
+			</ul>
+		{{/if}}
+	}{{#if trailingComma}},{{/if}}
+</div>
+
+<style>
+
+</style>
+
+<script>
+	const visibleNodes = require( './visibleNodes' );
+
+	const keyPriority = {
+		type: 1,
+		kind: 3,
+		operator: 5,
+		left: 10,
+		right: 11,
+		key: 20,
+		value: 21,
+		object: 30,
+		property: 31
+	};
+
+	component.exports = {
+		data: {
+			expanded: false,
+			highlighted: false,
+			isHighlighted ( id, prop ) {
+				return id && id === this.get( 'highlightedId' ) && prop === this.get( 'highlightedProp' );
+			}
+		},
+
+		computed: {
+			keys () {
+				const node = this.get( 'node' );
+				let keys = Object.keys( node ).filter( key => {
+					return key[0] !== '_' && key !== 'start' && key !== 'end';
+				});
+
+				keys.sort( ( a, b ) => {
+					const d = ( keyPriority[a] || 1000 ) - ( keyPriority[b] || 1000 );
+
+					return d || ( a < b ? -1 : 1 );
+				});
+
+				return keys;
+			}
+		},
+
+		oninit () {
+			this.id = this.get( 'node._id' );
+			this.set( 'expanded', this.get( 'depth' ) <= 2 );
+
+			this.observe( 'highlightedId', ( n, o ) => {
+
+				this.set( 'highlighted', n === this.id ); // TODO why doesn't this work in the template?
+			});
+		},
+
+		onrender () {
+			visibleNodes[ this.id ] = this;
+		},
+
+		onunrender () {
+			visibleNodes[ this.id ] = null;
+		},
+
+		highlight ( id, prop ) {
+			this.set({
+				highlightedId: id,
+				highlightedProp: prop
+			});
+			this.event.original.stopPropagation();
+		}
+	};
+</script>

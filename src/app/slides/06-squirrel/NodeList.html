@@ -1,0 +1,62 @@
+[ <button on-click='toggle("expanded")'>{{expanded ? '-' : '+'}}</button>
+	{{#if expanded}}
+		<ul>
+			{{#each nodes :i}}
+				<li
+					class='{{isHighlighted( this && this._id ) ? "highlighted" : ""}}'
+					on-mouseover='highlight(this._id)'
+				>
+					<Node
+						node='{{this}}'
+						trailingComma='{{i < nodes.length - 1}}'
+						depth='{{depth}}'
+						block='true'
+						highlightedId='{{highlightedId}}'
+						highlightedProp='{{highlightedProp}}'
+					/>
+				</li>
+			{{/each}}
+		</ul>
+	{{/if}}
+]{{#if trailingComma}},{{/if}}
+
+<style>
+
+</style>
+
+<script>
+	const visibleNodes = require( './visibleNodes' );
+
+	component.exports = {
+		data: {
+			expanded: false,
+			isHighlighted ( id ) {
+				return id === this.get( 'highlightedId' ) && !this.get( 'highlightedProp' );
+			}
+		},
+
+		oninit () {
+			this.parentId = this.get( 'parentId' );
+			this.prop = this.get( 'prop' );
+			this.set( 'expanded', this.get( 'depth' ) <= 2 );
+		},
+
+		onrender () {
+			console.log( `rendering ${this.parentId}_${this.prop}` );
+			visibleNodes[ `${this.parentId}_${this.prop}` ] = this;
+		},
+
+		onunrender () {
+			visibleNodes[ `${this.parentId}_${this.prop}` ] = null;
+		},
+
+		highlight ( id ) {
+			this.set({
+				highlightedId: id,
+				highlightedProp: null
+			});
+
+			this.event.original.stopPropagation();
+		}
+	};
+</script>

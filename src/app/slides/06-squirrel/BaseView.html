@@ -1,0 +1,200 @@
+<div class='app'>
+	<div class='left'>
+		<CodeMirror value='{{input}}'/>
+	</div>
+
+	<div class='right'>
+		<TreeView
+			tree='{{output}}'
+			highlightedId='{{highlightedId}}'
+			highlightedProp='{{highlightedProp}}'
+		/>
+	</div>
+</div>
+
+
+<style>
+	.app {
+		width: 100%;
+		height: 100%
+	}
+
+	.left, .right {
+		width: 50%;
+		height: 100%;
+		float: left;
+		overflow: auto;
+	}
+
+	.left {
+		padding: 0 0.5em 0 0;
+	}
+
+	.right {
+		padding: 0 0 0 0.5em;
+	}
+
+	textarea {
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<script>
+	const acorn = window.acorn;
+	const walk = require( './interop/walk' );
+	const visibleNodes = require( './visibleNodes' );
+
+	function frontToBack ( a, b ) {
+		return a.start - b.start || b.end - a.end;
+	}
+
+	function isObject ( thing ) {
+		return thing && Object.prototype.toString.call( thing ) === '[object Object]';
+	}
+
+	component.exports = {
+		oninit () {
+			this.set( 'input', localStorage.input || '' );
+
+			this.observe( 'input', input => {
+				try {
+					let output = acorn.parse( input, {
+						ecmaVersion: 6,
+						sourceType: 'module'
+					});
+
+					let nodes = [];
+					let nodeById = {};
+					let parentIds = {};
+					let uid = 1;
+
+					walk( output, {
+						enter: function ( node, parent, prop, index ) {
+							if ( prop && prop[0] === '_' ) return this.skip();
+
+							const id = uid++;
+
+							node._id = id;
+							node._parent = parent;
+							node._prop = prop;
+							node._index = index;
+
+							nodes.push( node );
+							nodeById[ id ] = node;
+						}
+					});
+
+					nodes.sort( frontToBack );
+
+					this.set({ nodes, output, parentIds });
+					this.nodeById = nodeById;
+				} catch ( err ) {
+					console.log( 'err', err );
+				}
+
+				localStorage.input = input;
+			});
+
+			const highlightNode = ( index, scrollIntoView ) => {
+				const highlightedNode = this.getNodeFromIndex( index );
+
+				if ( !highlightedNode ) return;
+
+				let node = highlightedNode;
+				let nodeComponent;
+
+				// find closest currently visible node (the actual target may be collapsed)
+				while ( node ) {
+					nodeComponent = visibleNodes[ node._id ];
+					if ( nodeComponent ) break;
+
+					node = node._parent;
+				}
+
+				this.set({
+					highlightedId: node._parent._id,
+					highlightedProp: node._prop
+				});
+
+				if ( scrollIntoView ) console.log( 'scrollIntoView' )
+			};
+
+			this.observe( 'highlightedId highlightedProp', () => {
+				const id = this.get( 'highlightedId' );
+				const prop = this.get( 'highlightedProp' );
+
+				let node = this.nodeById[ id ];
+				if ( prop && isObject( typeof node[ prop ] ) ) node = node[ prop ];
+
+				if ( node ) {
+					this.findComponent( 'CodeMirror' ).highlightRange( node.start, node.end );
+				}
+			});
+
+			this.on({
+				'CodeMirror.highlight': highlightNode,
+				'CodeMirror.select': index => {
+					const selectedNode = this.getNodeFromIndex( index );
+
+					if ( !selectedNode ) return;
+
+					let node = selectedNode;
+					let path = [];
+					let visibleNode;
+
+					while ( !visibleNode ) {
+						path.unshift( node );
+						visibleNode = visibleNodes[ node._id ];
+						if ( visibleNode ) break;
+
+						node = node._parent;
+					}
+
+					path.forEach( ( node, i ) => {
+						const view = visibleNodes[ node._id ];
+						view.set( 'expanded', true );
+
+						// if the next node is a member of a list, we
+						// need to expand the list
+						const next = path[ i + 1 ];
+						if ( next ) {
+							const list = visibleNodes[ `${node._id}_${next._prop}` ];
+							if ( list ) list.set( 'expanded', true );
+						}
+					});
+
+					highlightNode( index, true );
+				}
+			});
+		},
+
+		onrender () {
+			this.nodeQuery = this.findAllComponents( 'Node', { live: true });
+		},
+
+		getNodeFromIndex ( index ) {
+			const nodes = this.get( 'nodes' );
+			const len = nodes.length;
+
+			let i, node;
+			for ( i = 0; i < len; i += 1 ) {
+				if ( nodes[i].start > index ) {
+					break;
+				}
+
+				node = nodes[i];
+			}
+
+			return node;
+		},
+
+		components: {
+			CodeMirror: require( './CodeMirror' ),
+			TreeView: require( './TreeView' ),
+			Node: require( './Node' ),
+			NodeList: require( './NodeList' ),
+			Member: require( './Member' )
+		}
+	};
+</script>

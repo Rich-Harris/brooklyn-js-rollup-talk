@@ -12,6 +12,11 @@
 
 <script>
 	const eases = require( 'eases' );
+	console.dir( eases );
+
+	function elasticOut(t) {
+	  return Math.sin(-13.0 * (t + 1.0) * Math.PI/2) * Math.pow(2.0, -10.0 * t) + 1.0
+	}
 
 	component.exports = {
 		oninit () {
@@ -19,7 +24,7 @@
 				this.animate( 'impactOffset', step === 1 ? 150 : 0, {
 					duration: 800,
 					delay: 400,
-					easing: eases.elasticOut
+					easing: elasticOut
 				});
 			});
 		}
