@@ -3,10 +3,6 @@
 	bg='white'
 	steps='6'
 >
-	<div class='max bg'>
-		<!-- map goes here -->
-	</div>
-
 	<div class='max fg'>
 		<svg viewBox='0 0 2500 2700'>
 			<image xlink:href='subway.png' x='0' y='0' width='2500' height='2700'/>
@@ -130,7 +126,7 @@
 <script>
 	const d3 = window.d3;
 
-	const stopData = require( './used_stops' );
+	const stopData = require( '../../shared/used_stops' );
 
 	const colors = [ "#0074D9", "#7FDBFF", "#39CCCC", "#3D9970", "#2ECC40", "#01FF70", "#FFDC00", "#FF851B", "#FF4136", "#85144b", "#F012BE", "#B10DC9" ];
 	let c = 0;
@@ -144,7 +140,7 @@
 
 	component.exports = {
 		data: () => ({
-
+			line: 'all'
 		}),
 
 		computed: {
@@ -177,7 +173,7 @@
 		},
 
 		oninit () {
-
+			this.observe( 'step active', () => this.set( 'tooltip', null ) );
 		},
 
 		onrender () {

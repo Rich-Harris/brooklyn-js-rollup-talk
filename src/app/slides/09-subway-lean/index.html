@@ -1,0 +1,162 @@
+<Slide
+	class='padded'
+	bg='white'
+	steps='1'
+>
+	<div class='max fg'>
+		<svg viewBox='0 0 2500 2700'>
+			<image xlink:href='subway.png' x='0' y='0' width='2500' height='2700'/>
+
+			<g class='voronoi' intro-outro='fade'>
+				{{#each overlay}}
+					<path
+						d='{{path}}'
+						class='overlay hidden'
+						on-mouseover='set("highlighted", stop)'
+						on-mouseout='set("highlighted", null)'
+					/>
+				{{/each}}
+			</g>
+		</svg>
+	</div>
+
+	<div class='filter'>
+		<select value='{{line}}'>
+			<option value='all'>all lines</option>
+			<option>123</option>
+			<option>456</option>
+		</select>
+	</div>
+
+	{{#if tooltip}}
+		<div class='tooltip-anchor' style='left: {{tooltip.x}}; top: {{tooltip.y}};'>
+			<div class='tooltip'>
+				<h1>{{tooltip.stop.name}}</h1>
+			</div>
+			<div class='tooltip-arrow'></div>
+		</div>
+	{{/if}}
+</Slide>
+
+<style>
+	.max {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.visible { opacity: 0.7; }
+	.hidden { opacity: 0; }
+
+	path {
+		stroke: black;
+		fill: white;
+		fill-opacity: 0.9;
+		transition: fill-opacity 0.4s;
+	}
+
+	.tooltip-anchor {
+		position: fixed;
+		width: 0;
+		height: 0;
+	}
+
+	.tooltip {
+		position: absolute;
+		width: 20em;
+		left: -10em;
+		bottom: 1em;
+		padding: 0.5em;
+		background-color: #333;
+		color: white;
+		border-radius: 0.2em;
+		pointer-events: none;
+	}
+
+	.tooltip-arrow {
+		position: absolute;
+		left: -1em;
+		top: -1em;
+		width: 1em;
+		height: 1em;
+		border-top: 1em solid #333;
+		border-left: 1em solid transparent;
+		border-right: 1em solid transparent;
+		border-bottom: 1em solid transparent;
+		pointer-events: none;
+	}
+
+	.tooltip h1 {
+		font-size: 1.4rem;
+		font-weight: 900;
+	}
+</style>
+
+<script>
+	const stopData = require( '../../shared/used_stops' );
+	const generateVoronoiLayout = require( './generate-voronoi-bundle' );
+
+	const colors = [ "#0074D9", "#7FDBFF", "#39CCCC", "#3D9970", "#2ECC40", "#01FF70", "#FFDC00", "#FF851B", "#FF4136", "#85144b", "#F012BE", "#B10DC9" ];
+	let c = 0;
+
+	function svgToClient ( matrix, x, y ) {
+		return {
+			x: matrix.e + ( matrix.a * x ),
+			y: matrix.f + ( matrix.a * y )
+		};
+	}
+
+	component.exports = {
+		data: () => ({
+			line: 'all'
+		}),
+
+		computed: {
+			stops () {
+				const line = this.get( 'line' );
+				return stopData.filter( stop => {
+					if ( line === 'all' ) return true;
+					if ( line == '123' ) return +stop.id[0] <= 3;
+					if ( line == '456' ) return +stop.id[0] >= 4;
+				});
+			},
+
+			overlay () {
+				const stops = this.get( 'stops' );
+
+				const layout = generateVoronoiLayout( stops );
+				console.log( 'layout', layout )
+				return layout;
+			}
+		},
+
+		oninit () {
+			this.observe( 'step active', () => this.set( 'tooltip', null ) );
+		},
+
+		onrender () {
+			this.svg = this.find( 'svg' );
+
+			this.observe( 'highlighted', stop => {
+				if ( stop ) {
+					const { x, y } = svgToClient( this.svg.getScreenCTM(), stop.x, stop.y );
+
+					this.set( 'tooltip', { stop, x, y });
+				} else {
+					this.set( 'tooltip', null );
+				}
+			});
+		},
+
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>

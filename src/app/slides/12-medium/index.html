@@ -1,0 +1,41 @@
+<Slide
+	img='images/medium.png'
+	bg='{{step === 1 ? "rgba(255,255,255,0)": "rgba(0,0,0,0.7)"}}'
+	steps='3'
+>
+	<div class='top-section'>
+		<p class='impact' style='transform: translate({{impactOffset}}vw, 0);'>
+			<span style='font-size: 13vw;'>Small modules</span>
+			<span style='font-size: 4.4vw;'>favour library authors over library users</span>
+		</p>
+	</div>
+
+	<div class='top-section'>
+		<img
+			src='images/tweet.png'
+			style='width: 80vh; transform: translate({{imageOffset}}vw, 0);'
+		>
+	</div>
+</Slide>
+
+<script>
+	const eases = require( 'eases' );
+
+	component.exports = {
+		oninit () {
+			this.observe( 'step', step => {
+				this.animate( 'impactOffset', ( step < 2 ? 150 : step > 2 ? -150 : 0 ), {
+					duration: 800,
+					delay: 400,
+					easing: eases.elasticOut
+				});
+
+				this.animate( 'imageOffset', ( step < 3 ? 150 : step > 3 ? -150 : 0 ), {
+					duration: 800,
+					delay: 400,
+					easing: eases.elasticOut
+				});
+			});
+		}
+	};
+</script>

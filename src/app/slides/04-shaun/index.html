@@ -1,0 +1,27 @@
+<Slide
+	img='images/shaun.gif'
+	steps='2'
+>
+	<div class='top-section'>
+		<p class='impact' style='transform: translate({{impactOffset}}vw, 0);'>
+			<span style='font-size: 10vw;'>Dead code elimination</span>
+			<span style='font-size: 5.2vw;'>kinda works in JavaScript but not really</span>
+		</p>
+	</div>
+</Slide>
+
+<script>
+	const eases = require( 'eases' );
+
+	component.exports = {
+		oninit () {
+			this.observe( 'step', step => {
+				this.animate( 'impactOffset', step === 1 ? 150 : 0, {
+					duration: 800,
+					delay: 400,
+					easing: eases.elasticOut
+				});
+			});
+		}
+	};
+</script>

@@ -15,10 +15,14 @@
     "start": "gobble"
   },
   "dependencies": {
+    "acorn": "^2.0.4",
+    "d3-jsnext": "^3.5.5",
     "eases": "^1.0.6",
     "gtfs-realtime-bindings": "0.0.4",
     "ractive": "^0.7.3",
+    "ractive-events-tap": "^0.2.0",
     "ractive-transitions-fade": "^0.2.0",
+    "ractive-transitions-slide": "^0.2.1",
     "request": "^2.58.0"
   }
 }

@@ -36,3 +36,16 @@ a {
 .clearfix {
 	@include clearfix;
 }
+
+.impact {
+	width: 100vw;
+	color: white;
+	text-shadow: 0 0 5px black;
+	font-family: Impact;
+	text-transform: uppercase;
+	text-align: center;
+
+	span {
+		display: block;
+	}
+}

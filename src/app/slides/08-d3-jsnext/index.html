@@ -1,0 +1,38 @@
+<Slide
+	class='padded'
+	bg='#001f3f'
+	steps='1'
+>
+	<pre class='top-section'>
+import { voronoi } from 'd3-jsnext';
+
+export default function generateVoronoiLayout ( stops ) {
+  const layout = voronoi( stops.map( ({ x, y }) => ([ x, y ]) ) );
+
+  return layout.map( ( points, i ) => ({
+    index: i,
+    stop: stops[i],
+    path: 'M' + points.join( 'L' ) + 'L' + points[0] + 'Z'
+  }));
+}
+	</pre>
+</Slide>
+
+<style>
+	pre {
+		color: white;
+		font-size: 2vw;
+	}
+
+	.comment {
+		opacity: 0.5;
+	}
+</style>
+
+<script>
+	component.exports = {
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>

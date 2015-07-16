@@ -1,0 +1,52 @@
+<Slide
+class='padded'
+bg='#001f3f'
+	steps='2'
+>
+	{{#if step === 1}}
+		<pre class='top-section' intro-outro='fade'>
+function foo () { <span class='comment'>// used by final line</span>
+  return bar();
+}
+
+function bar () { <span class='comment'>// used by foo</span>
+  return 42;
+}
+
+function baz () { <span class='comment'>// not used</span>
+  return 'lol';
+}
+
+console.log( foo() );
+		</pre>
+	{{/if}}
+
+	{{#if step === 2}}
+		<pre class='top-section' intro-outro='fade'>
+var people = {};
+
+people.yourMother = function () {
+  alert( 'why do you never call me?' );
+};
+		</pre>
+	{{/if}}
+</Slide>
+
+<style>
+	pre {
+		color: white;
+		font-size: 2rem;
+	}
+
+	.comment {
+		opacity: 0.5;
+	}
+</style>
+
+<script>
+	component.exports = {
+		transitions: {
+			fade: require( 'ractive-transitions-fade' )
+		}
+	};
+</script>

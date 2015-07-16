@@ -1,0 +1,42 @@
+<Slide
+	class='padded'
+	bg='#001f3f'
+	steps='2'
+>
+	<h2>How you can help</h2>
+
+	<pre>
+{
+  "name": "my-neato-library",&nbsp;&nbsp;&nbsp;
+  "version": "0.1.0",
+  "main": "lib/neato.js"{{#if step === 2}}<span intro-outro='fade'>,
+  <strong>"jsnext:main": "src/neato.js"</strong></span>{{/if}}
+}
+	</pre>
+</Slide>
+
+<style>
+	h2 {
+		color: white;
+		font-size: 6vw;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	pre {
+		position: absolute;
+		color: white;
+		font-size: 4vw;
+		left: 50%;
+		transform: translate(-50%,0);
+	}
+</style>
+
+<script>
+	component.exports = {
+		transitions: {
+			fade: require( 'ractive-transitions-fade' ),
+			slide: require( 'ractive-transitions-slide' )
+		}
+	};
+</script>
