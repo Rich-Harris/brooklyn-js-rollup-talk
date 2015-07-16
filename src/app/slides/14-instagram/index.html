@@ -15,14 +15,10 @@
 </style>
 
 <script>
-	const cube = require( './cube' );
-	console.log( 'cube', cube )
-
 	component.exports = {
 		decorators: {
 			renderCube ( node ) {
-				console.log( 'rendering cube to', node )
-				return cube( node );
+				return window.renderScene( node );
 			}
 		}
 	};

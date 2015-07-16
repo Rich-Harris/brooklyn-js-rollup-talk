@@ -10,26 +10,24 @@ import {
 } from 'three-jsnext';
 
 export default function ( el ) {
-	const renderer = new WebGLRenderer();
+	var renderer = new WebGLRenderer();
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( el.offsetWidth, el.offsetHeight );
 	el.appendChild( renderer.domElement );
 
-	const camera = new PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+	var camera = new PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 	camera.position.z = 400;
 
-	const scene = new Scene();
+	var scene = new Scene();
 
-	const geometry = new BoxGeometry( 300, 300, 300 );
+	var geometry = new BoxGeometry( 300, 300, 300 );
 
-	const texture = ImageUtils.loadTexture( 'images/brooklynjs.png' );
+	var texture = ImageUtils.loadTexture( 'images/texture.jpg' );
 	texture.minFilter = LinearFilter;
-	//texture.anisotropy = renderer.getMaxAnisotropy();
 
-	const material = new MeshBasicMaterial({ map: texture });
-	//const material = new MeshBasicMaterial({ color: 0xff0000 });
+	var material = new MeshBasicMaterial({ map: texture });
 
-	const mesh = new Mesh( geometry, material );
+	var mesh = new Mesh( geometry, material );
 	scene.add( mesh );
 
 	function onWindowResize () {
@@ -41,7 +39,7 @@ export default function ( el ) {
 
 	window.addEventListener( 'resize', onWindowResize, false );
 
-	let animating = true;
+	var animating = true;
 	function animate () {
 		if ( animating ) requestAnimationFrame( animate );
 
@@ -54,11 +52,11 @@ export default function ( el ) {
 	animate();
 
 	return {
-		teardown () {
+		teardown: function () {
 			animating = false;
 			window.removeEventListener( 'resize', onWindowResize, false );
 
-			setTimeout( () => {
+			setTimeout( function () {
 				el.removeChild( renderer.domElement );
 			}, 4000 );
 		}

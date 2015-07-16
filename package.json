@@ -12,10 +12,11 @@
     "gobble-sass": "^0.5.0"
   },
   "scripts": {
-    "start": "gobble"
+    "start": "scripts/start.sh"
   },
   "dependencies": {
     "acorn": "^2.0.4",
+    "cheerio": "^0.19.0",
     "d3-jsnext": "^3.5.5",
     "eases": "^1.0.6",
     "gtfs-realtime-bindings": "0.0.4",
