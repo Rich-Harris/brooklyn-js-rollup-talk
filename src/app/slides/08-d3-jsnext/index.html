@@ -1,7 +1,7 @@
 <Slide
 	class='padded'
 	bg='#001f3f'
-	steps='1'
+	steps='2'
 >
 	<pre class='top-section'>
 import { voronoi } from 'd3-jsnext';
@@ -16,6 +16,8 @@ export default function generateVoronoiLayout ( stops ) {
   }));
 }
 	</pre>
+
+	<img class='bostock' src='images/bostock-crop.png' style='transform: translate({{transform.x}}vw,{{transform.y}}vh) rotate({{transform.r}}deg);'>
 </Slide>
 
 <style>
@@ -27,12 +29,44 @@ export default function generateVoronoiLayout ( stops ) {
 	.comment {
 		opacity: 0.5;
 	}
+
+	.bostock {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		height: 80vh;
+	}
 </style>
 
 <script>
+	function qinticOut(t) {
+		return --t * t * t * t * t + 1
+	}
+
 	component.exports = {
 		transitions: {
 			fade: require( 'ractive-transitions-fade' )
+		},
+
+		data: () => ({
+			transform: {}
+		}),
+
+		oninit () {
+			this.observe( 'step', step => {
+				this.animate( 'transform', step === 2 ? {
+					x: 5,
+					y: 5,
+					r: -4
+				} : {
+					x: 100,
+					y: 0,
+					r: 0
+				}, {
+					duration: 400,
+					easing: qinticOut
+				})
+			})
 		}
 	};
 </script>

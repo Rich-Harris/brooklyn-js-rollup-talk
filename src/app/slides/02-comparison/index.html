@@ -6,7 +6,7 @@
 	steps='6'
 >
 	<div class='fader' style='opacity: {{step === 5 ? 0.3 : 1}}'>
-		<div class='background'>
+		<!-- <div class='background'>
 			{{#if step === 1}}
 				<pre intro-outro='fade'>{{code.browserify}}</pre>
 			{{/if}}
@@ -18,7 +18,7 @@
 			{{#if step >= 3}}
 				<pre intro-outro='fade'>{{code.esperanto}}</pre>
 			{{/if}}
-		</div>
+		</div> -->
 
 		<ul class='legend'>
 			<li class='used'>code</li>
@@ -161,11 +161,11 @@
 				bundles.webpack.size,
 				bundles.esperanto.size
 			),
-			code: {
-				browserify: require( './code-samples/browserify' ),
-				webpack: require( './code-samples/webpack' ),
-				esperanto: require( './code-samples/esperanto' )
-			},
+			// code: {
+			// 	browserify: require( './code-samples/browserify' ),
+			// 	webpack: require( './code-samples/webpack' ),
+			// 	esperanto: require( './code-samples/esperanto' )
+			// },
 			impactOffset: 100
 		}),
 

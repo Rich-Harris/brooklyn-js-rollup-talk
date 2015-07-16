@@ -11,7 +11,7 @@
 				<Module module='{{this}}' total='{{ minified ? bundle.app.sizeMinified : bundle.app.size}}' minified='{{minified}}'/>
 			{{/each}}
 
-			{{#if active}}
+			{{#if active && !minified}}
 				<div intro-outro='fade' class='bundle-annotation'><span>app code</span></div>
 			{{/if}}
 		</div>
@@ -21,7 +21,7 @@
 				<Module module='{{this}}' total='{{ minified ? bundle.lib.sizeMinified : bundle.lib.size}}' minified='{{minified}}'/>
 			{{/each}}
 
-			{{#if active}}
+			{{#if active && !minified}}
 				<div intro-outro='fade' class='bundle-annotation'><span>library code</span></div>
 			{{/if}}
 		</div>
