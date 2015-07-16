@@ -54,6 +54,7 @@
 		<div class='tooltip-anchor' style='left: {{tooltip.x}}; top: {{tooltip.y}};'>
 			<div class='tooltip'>
 				<h1>{{tooltip.stop.name}}</h1>
+				<p>The next train is arriving in {{random(tooltip.stop.id)}} minutes</p>
 			</div>
 			<div class='tooltip-arrow'></div>
 		</div>
@@ -125,6 +126,16 @@
 		font-size: 1.4rem;
 		font-weight: 900;
 	}
+
+	.tooltip p {
+		margin: 0;
+	}
+
+	select {
+		font-family: inherit;
+		font-size: 5em;
+		transform: translate(50%,50%) scale(2);
+	}
 </style>
 
 <script>
@@ -144,7 +155,10 @@
 
 	component.exports = {
 		data: () => ({
-			line: 'all'
+			line: 'all',
+			random () {
+				return ~~( Math.random() * 6 ) + 2;
+			}
 		}),
 
 		computed: {
